@@ -1,0 +1,16 @@
+
+# 文件
+*.jpg
+val.txt
+train.txt
+test.txt
+*.xml
+
+# 文件夹
+Annotations
+*images*/*
+*labels*/*
+
+# 缓存文件
+.ipynb_checkpoints
+.idea
