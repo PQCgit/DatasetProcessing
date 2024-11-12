@@ -6,6 +6,13 @@
 #   描述   ：
 
 
-import numpy as np
 
-print(np.array([1, 2]))
+import os
+
+file_path = '/path/to/filename.txt'
+filename, extension = os.path.splitext(file_path)
+full_file_path = os.path.join('/path/to', filename+extension)
+
+print(full_file_path)   # 输出: /path/to/filename.txt
+
+1

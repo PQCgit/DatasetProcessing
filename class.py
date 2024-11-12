@@ -47,8 +47,8 @@ class DatasetProcess:
         self.labelsdir_path = labelsdir_path  # 标签文件的路径
         self.dataset_classes = dataset_classes  # 数据集类别名称
 
-        self.files_name = {"train": [], "val": [], "test": []}  # 文件名称集合
-        self.files_num = {"train": 0, "val": 0, "test": 0}  # 文件数量
+        self.files_name = {"train": [], "val": [], "test": [], "all": []}  # 文件名称集合
+        self.files_num = {"train": 0, "val": 0, "test": 0, "all": 0}  # 文件数量
         self.dataset_num = 0  # 数据集总图片数量(train+val+test)
 
         s = input("请输入数据集的模式：")
@@ -71,6 +71,9 @@ class DatasetProcess:
                 self.files_name[data_str] = [name[:-4] for name in self.files_name[data_str]]  # 去掉 .jpg 后缀
                 self.files_num[data_str] = len(self.files_name[data_str])  # 当前数据集合的文件数量
                 self.dataset_num += self.files_num[data_str]
+            self.files_name["all"] = self.files_name["train"] + self.files_name["test"] + self.files_name["val"]
+            self.files_name["all"].sort()  # 避免乱序
+
         self.dataset_mode = s  # 数据集的模式
 
         self.print_dataset()  # 打印数据集信息
@@ -161,12 +164,12 @@ class DatasetProcess:
     def xmlConvertTxt(self, data_list, abandon_classes=[], save_dir="labels_txt"):
         """
         将VOC格式(xml)转化为YOLO格式(txt)
-        :param data_list: [str(,str)]，需要转化的数据,例如["train", "val"]或["all"]
+        :param data_list: [str(,str)]，需要转化的数据,例如["train", "val"]或["all"]（注：不支持 "all" 与其它单独组合）
         :param abandon_classes:[str(,str)] 需要剔除的类别列表
         :param save_dir: str，保存的文件夹名称
         :return: None
         """
-        for i, name in enumerate(abandon_classes): # 转换为索引列表
+        for i, name in enumerate(abandon_classes):  # 转换为索引列表
             abandon_classes[i] = self.dataset_classes.index(name)
         abandon_classes.sort()  # 排序
 
@@ -232,8 +235,8 @@ class DatasetProcess:
 
     def imagesPathRecord(self, data_list):
         """
-        对于每个数据集合，将图片的相对路径保存在 data_list[i]+ ".txt"（注：也可以保存绝对路径，但是不利于移植）
-        :param data_list: [str(,str)]，需要转化的数据,例如["train", "val"]或者["all"]
+        对于每个数据集合，将图片的相对路径保存在 data_list[i] + ".txt"（注：也可以保存绝对路径，但是不利于移植）
+        :param data_list: [str(,str)]，需要转化的数据,例如["train", "val"]或者["all"]（注：不支持 "all" 与其它单独组合）
         :return:None
         """
         for data_str in data_list:  # 遍历每个数据集合
@@ -282,14 +285,6 @@ class DatasetProcess:
         print("\n数据集模式：%s    数据集图片数量：%d    训练集图片数量：%d    验证集图片数量：%d    测试集图片数量：%d    比例：%.2f:%.2f:%.2f" %
               (self.dataset_mode, self.dataset_num, self.files_num["train"], self.files_num["val"], self.files_num["test"],
                self.files_num["train"] / self.dataset_num, self.files_num["val"] / self.dataset_num, self.files_num["test"] / self.dataset_num))
-
-    def del_classes(self, abandon_classes):
-        """
-        删除标签文件里的指定类别
-        :param abandon_classes:[str(,str)] 类别列表
-        :return:
-        """
-
 
 
     def image_clahe(self, imsge_path):
